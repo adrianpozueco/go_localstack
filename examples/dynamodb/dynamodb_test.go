@@ -1,14 +1,15 @@
 package examples
 
 import (
+    "context"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+    "github.com/aws/aws-sdk-go-v2/service/dynamodbstreams"
     "log"
     "fmt"
     "testing"
     "os"
     "github.com/mitchelldavis/go_localstack/pkg/localstack"
 
-    "github.com/aws/aws-sdk-go/service/dynamodb"
-    "github.com/aws/aws-sdk-go/service/dynamodbstreams"
 )
 
 // LOCALSTACK: A global reference to the Localstack object
@@ -58,8 +59,12 @@ func InitializeLocalstack(t *testing.M) int {
     return t.Run()
 }
 func Test_Dynamodb(t *testing.T) {
-    svc := dynamodb.New(LOCALSTACK.CreateAWSSession())
-    result, err := svc.ListTables(&dynamodb.ListTablesInput{ })
+    config, err := LOCALSTACK.CreateConfig()
+    if err != nil {
+        t.Error(err)
+    }
+    svc := dynamodb.NewFromConfig(config)
+    result, err := svc.ListTables(context.TODO(), &dynamodb.ListTablesInput{ })
     if err != nil {
         t.Error(err)
     }
@@ -69,8 +74,12 @@ func Test_Dynamodb(t *testing.T) {
     }
 }
 func Test_DynamoDBStreams(t *testing.T) {
-    svc := dynamodbstreams.New(LOCALSTACK.CreateAWSSession())
-    result, err := svc.ListStreams(&dynamodbstreams.ListStreamsInput{ })
+    config, err := LOCALSTACK.CreateConfig()
+    if err != nil {
+        t.Error(err)
+    }
+    svc := dynamodbstreams.NewFromConfig(config)
+    result, err := svc.ListStreams(context.TODO(), &dynamodbstreams.ListStreamsInput{ })
     if err != nil {
         t.Error(err)
     }
